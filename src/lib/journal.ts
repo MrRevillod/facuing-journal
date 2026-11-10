@@ -59,6 +59,15 @@ export const authorLine = (authors: Author[] = [], max = 5) => {
 export const doiLabel = (doi: string) =>
   doi ? doi.replace(/^https?:\/\/(dx\.)?doi\.org\//, "doi: ") : "";
 
+export const pageRange = (pages: string) => pages.replace(/(\d)-(\d)/, "$1–$2");
+
+export const summary = (text: string, max = 155) => {
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  const cut = clean.slice(0, max).replace(/\s+\S*$/, "");
+  return `${cut.replace(/[,;:.]+$/, "")}…`;
+};
+
 export const citation = (article: Article) => {
   const names = article.authors.map((author) => author.name);
   const issue = issueById(article.issueId);
@@ -67,7 +76,7 @@ export const citation = (article: Article) => {
   parts.push(`(${issue ? issue.year : "s. f."}).`);
   parts.push(`${article.title}.`);
   parts.push("Revista de Ingeniería UCT.");
-  if (issue) parts.push(`${issueLabel(issue)}, ${article.pages}.`);
+  if (issue) parts.push(`${issueLabel(issue)}, ${pageRange(article.pages)}.`);
   if (article.doi) parts.push(article.doi);
   return parts.join(" ");
 };
