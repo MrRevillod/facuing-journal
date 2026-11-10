@@ -77,7 +77,7 @@ export const meta: JournalMeta = {
   university: "Universidad Católica de Temuco",
   issn: "ISSN: ABC-XYZ",
   frequency: "Publicación continua",
-  email: "revista.ingenieria@uct.cl",
+  email: "sample.email@prototype.cl",
   address: "Av. Rudecindo Ortega 03694, Temuco, Chile",
   license: "CC BY 4.0",
   site: "https://facultadingenieria.uct.cl",
