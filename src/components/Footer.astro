@@ -2,66 +2,75 @@
 import { meta } from "../data/journal";
 ---
 
-<footer class="mt-20 border-t border-line bg-paper-deep">
-  <div class="mx-auto grid max-w-6xl gap-10 px-6 py-12 md:grid-cols-[1.5fr_1fr_1fr]">
+<footer class="mt-20 bg-[#1c1c1c] text-white/70">
+  <div class="mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-[1.5fr,1fr,1fr]">
     <div>
       <div class="flex items-center gap-3">
         <img
           src="/assets/logo-uct.webp"
           alt="Universidad Católica de Temuco"
-          class="h-8 w-8 shrink-0 object-contain"
+          class="h-9 w-9 shrink-0 object-contain"
         />
-        <span class="whitespace-nowrap font-serif text-[16px] leading-tight text-ink">
+        <span class="whitespace-nowrap font-serif text-[17px] leading-tight text-white">
           {meta.shortName}
         </span>
       </div>
-      <p class="mt-4 max-w-sm text-[13px] leading-relaxed text-muted">
+      <p class="mt-5 max-w-sm text-[13px] leading-relaxed text-white/70">
         Publicación de la {meta.faculty} de la {meta.university}. Artículos de investigación,
         notas técnicas y revisiones con revisión por pares y acceso abierto.
       </p>
       <a
         href="https://academicos.inf.uct.cl"
-        class="mt-4 inline-block text-[12px] text-accent underline decoration-accent/30 underline-offset-4 transition hover:decoration-accent"
+        class="mt-4 inline-block text-[12px] text-accent-soft underline decoration-accent-soft/30 underline-offset-4 transition hover:decoration-accent-soft"
       >
         Producción académica de la Facultad
       </a>
       <a
         href={meta.site}
-        class="mt-2 block text-[12px] text-accent underline decoration-accent/30 underline-offset-4 transition hover:decoration-accent"
+        class="mt-2 block text-[12px] text-accent-soft underline decoration-accent-soft/30 underline-offset-4 transition hover:decoration-accent-soft"
       >
         Sitio de la Facultad
       </a>
     </div>
 
     <div>
-      <h4 class="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Revista</h4>
+      <h4 class="text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+        Revista
+      </h4>
       <ul class="mt-3 space-y-1.5 text-[13px]">
-        <li><a class="text-ink/80 underline decoration-transparent underline-offset-2 transition hover:decoration-ink" href="/numeros/">Número actual</a></li>
-        <li><a class="text-ink/80 underline decoration-transparent underline-offset-2 transition hover:decoration-ink" href="/numeros/">Números anteriores</a></li>
-        <li><a class="text-ink/80 underline decoration-transparent underline-offset-2 transition hover:decoration-ink" href="/autores/">Para autores</a></li>
-        <li><a class="text-ink/80 underline decoration-transparent underline-offset-2 transition hover:decoration-ink" href="/comite/">Comité editorial</a></li>
-        <li><a class="text-ink/80 underline decoration-transparent underline-offset-2 transition hover:decoration-ink" href="/politicas/">Políticas editoriales</a></li>
-        <li><a class="text-ink/80 underline decoration-transparent underline-offset-2 transition hover:decoration-ink" href="/buscar/">Buscar artículos</a></li>
+        <li><a class="text-white/70 underline decoration-transparent underline-offset-2 transition hover:text-white hover:decoration-white" href="/numeros/">Número actual</a></li>
+        <li><a class="text-white/70 underline decoration-transparent underline-offset-2 transition hover:text-white hover:decoration-white" href="/numeros/">Números anteriores</a></li>
+        <li><a class="text-white/70 underline decoration-transparent underline-offset-2 transition hover:text-white hover:decoration-white" href="/autores/">Para autores</a></li>
+        <li><a class="text-white/70 underline decoration-transparent underline-offset-2 transition hover:text-white hover:decoration-white" href="/comite/">Comité editorial</a></li>
+        <li><a class="text-white/70 underline decoration-transparent underline-offset-2 transition hover:text-white hover:decoration-white" href="/politicas/">Políticas editoriales</a></li>
+        <li><a class="text-white/70 underline decoration-transparent underline-offset-2 transition hover:text-white hover:decoration-white" href="/buscar/">Buscar artículos</a></li>
       </ul>
     </div>
 
     <div>
-      <h4 class="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Contacto</h4>
-      <ul class="mt-3 space-y-1.5 text-[13px] text-ink/80">
+      <h4 class="text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+        Contacto
+      </h4>
+      <ul class="mt-3 space-y-1.5 text-[13px] text-white/70">
         <li>{meta.faculty}</li>
         <li>{meta.address}</li>
         <li>
-          <a class="underline decoration-line underline-offset-2 hover:decoration-ink" href={`mailto:${meta.email}`}>
+          <a
+            class="text-accent-soft underline decoration-accent-soft/30 underline-offset-2 transition hover:decoration-accent-soft"
+            href={`mailto:${meta.email}`}
+          >
             {meta.email}
           </a>
         </li>
       </ul>
-      <p class="mt-4 text-[11px] leading-relaxed text-muted">{meta.issn} · {meta.license}</p>
+      <p class="mt-4 text-[11px] leading-relaxed text-white/45">
+        {meta.issn} · {meta.license}
+      </p>
     </div>
   </div>
 
-  <div class="border-t border-line">
-    <div class="mx-auto flex max-w-6xl flex-col gap-1 px-6 py-4 text-[11px] text-muted sm:flex-row sm:items-center sm:justify-between">
+  <div class="border-t border-white/10">
+    <div class="mx-auto flex max-w-6xl flex-col gap-1 px-6 py-5 text-[11px] text-white/45 sm:flex-row sm:items-center sm:justify-between">
       <span>© {new Date().getFullYear()} {meta.university}</span>
       <span>Prototipo de diagramación · Contenido de muestra</span>
     </div>
