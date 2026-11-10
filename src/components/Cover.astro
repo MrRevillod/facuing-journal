@@ -16,7 +16,10 @@ const Tag = link ? "a" : "div";
   <div
     class="relative flex aspect-[3/4] flex-col justify-between overflow-hidden border border-ink/15 bg-ink p-5 text-paper"
   >
-    <span class="absolute inset-x-0 top-0 h-1 bg-accent"></span>
+    <span class="absolute inset-x-0 top-0 flex h-1">
+      <span class="h-full w-1/2 bg-accent"></span>
+      <span class="h-full w-1/2 bg-corp-yellow"></span>
+    </span>
     <div class="flex items-center justify-between text-[11px] uppercase tracking-[0.2em] text-paper/70">
       <span>Revista de Ingeniería</span>
       <span>UCT</span>
