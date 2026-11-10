@@ -114,5 +114,6 @@ const nav = [
         panel.classList.toggle("hidden", !opening);
         panel.classList.toggle("flex", opening);
         toggle.setAttribute("aria-expanded", String(opening));
+        window.dispatchEvent(new Event("site-header-toggle"));
     });
 </script>

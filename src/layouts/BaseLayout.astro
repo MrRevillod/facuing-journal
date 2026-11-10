@@ -55,8 +55,10 @@ const url = canonical ?? new URL(Astro.url.pathname, site).href;
         >
             Saltar al contenido
         </a>
-        <Preheader />
-        <Masthead active={active} brandAsHeading={active === "/"} />
+        <div id="site-header" class="sticky top-0 z-40 [view-transition-name:site-header]">
+            <Preheader />
+            <Masthead active={active} brandAsHeading={active === "/"} />
+        </div>
         <main id="contenido" class="mx-auto max-w-6xl px-6">
             <slot />
         </main>
@@ -64,6 +66,25 @@ const url = canonical ?? new URL(Astro.url.pathname, site).href;
 
         <script>
             let toastTimer: number | undefined;
+
+            const header = document.getElementById("site-header");
+
+            const syncHeaderHeight = () => {
+                if (!header) return;
+                document.documentElement.style.setProperty(
+                    "--header-h",
+                    `${Math.round(header.getBoundingClientRect().height)}px`,
+                );
+            };
+
+            syncHeaderHeight();
+
+            if (header && "ResizeObserver" in window) {
+                new ResizeObserver(syncHeaderHeight).observe(header);
+            }
+
+            window.addEventListener("resize", syncHeaderHeight);
+            window.addEventListener("site-header-toggle", syncHeaderHeight);
 
             const showToast = (message: string) => {
                 let el = document.getElementById("site-toast");

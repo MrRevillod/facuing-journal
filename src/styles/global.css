@@ -84,10 +84,16 @@
   --font-sans: "Vista Sans", system-ui, sans-serif;
 }
 
+:root {
+  /* alto de la cabecera fija; el script de BaseLayout lo ajusta al real */
+  --header-h: 150px;
+}
+
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
     background-color: var(--color-paper);
+    scroll-padding-top: calc(var(--header-h) + 1rem);
   }
 
   /* Transición entre páginas un poco más corta que el valor por defecto */

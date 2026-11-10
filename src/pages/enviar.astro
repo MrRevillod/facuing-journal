@@ -21,7 +21,7 @@ import { keywordSuggestions } from "../data/journal";
   <div class="grid gap-12 py-10 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-start">
     <SubmissionForm client:load keywordSuggestions={keywordSuggestions} />
 
-    <aside class="min-w-0 lg:sticky lg:top-6 lg:self-start lg:border-l lg:border-line lg:pl-8">
+    <aside class="min-w-0 lg:sticky lg:top-[calc(var(--header-h)+1.5rem)] lg:self-start lg:border-l lg:border-line lg:pl-8">
       <h2 class="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Antes de enviar</h2>
       <ul class="mt-3 space-y-2 text-[12px] leading-relaxed text-ink/85">
         <li>Manuscrito en PDF o DOCX.</li>
