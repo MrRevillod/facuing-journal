@@ -1,0 +1,312 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Cover from "../components/Cover.astro";
+import IssueCard from "../components/IssueCard.astro";
+import {
+    articleCount,
+    articleUrl,
+    articlesByIssue,
+    authorLine,
+    currentIssue,
+    doiLabel,
+    excerpt,
+    formatDate,
+    issueFullLabel,
+    issueLabel,
+    issueUrl,
+    sortedIssues,
+} from "../lib/journal";
+import { meta } from "../data/journal";
+
+const issue = currentIssue();
+const issueArticles = articlesByIssue(issue.id);
+const featured =
+    issueArticles.find((article) => article.featured) ?? issueArticles[0];
+const others = issueArticles
+    .filter((article) => article.id !== featured.id)
+    .slice(0, 4);
+const previewIssues = sortedIssues();
+
+const description = `Revista de Ingeniería UCT. ${issueArticles.length} artículos en el ${issueFullLabel(issue)} de la Facultad de Ingeniería de la Universidad Católica de Temuco.`;
+---
+
+<BaseLayout
+    title={`${meta.name} — ${meta.faculty}`}
+    description={description}
+    active="/"
+>
+    <!-- NÚMERO ACTUAL -->
+    <section class="py-12">
+        <div class="grid gap-10 lg:grid-cols-[240px_minmax(0,1fr)] lg:items-start">
+            <div class="max-w-[240px]">
+                <Cover issue={issue} />
+            </div>
+
+            <div class="min-w-0">
+                <h1 class="font-serif text-[34px] leading-tight tracking-[-0.01em] text-ink">
+                    {issueFullLabel(issue)}
+                </h1>
+                <p class="mt-2 text-[13px] text-muted">
+                    Número actual · {issue.subtitle} · Publicado el{" "}
+                    {formatDate(issue.publishedAt)}
+                </p>
+                <p class="mt-6 max-w-[62ch] font-serif text-[17px] leading-[1.7] text-ink/90">
+                    {issue.editorial.text}
+                </p>
+                <div class="mt-7 flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px]">
+                    <a
+                        href={issueUrl(issue)}
+                        class="inline-flex h-9 items-center rounded-sm bg-accent px-4 text-[12px] font-medium tracking-wide text-white transition hover:bg-[#00679e]"
+                    >
+                        Ver número
+                    </a>
+                    <a
+                        href="/enviar/"
+                        class="font-medium text-accent underline decoration-accent/30 underline-offset-4 transition hover:decoration-accent"
+                    >
+                        Enviar un artículo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LÍNEA DE CONTEXTO -->
+    <section class="border-y border-line py-3">
+        <p class="text-[11px] uppercase tracking-[0.14em] text-muted">
+            {issueArticles.length} artículos · {issue.subtitle} · {meta.issn}
+        </p>
+    </section>
+
+    <!-- ARTÍCULO DESTACADO -->
+    <section class="py-12">
+        <div class="mb-6 flex items-baseline justify-between gap-4 border-b border-line pb-3">
+            <h2 class="font-serif text-[22px] text-ink">Artículo destacado</h2>
+            <a
+                href={issueUrl(issue)}
+                class="text-[12px] text-muted underline decoration-line underline-offset-4 transition hover:text-ink hover:decoration-ink"
+            >
+                Ver el número completo
+            </a>
+        </div>
+
+        <div class="grid gap-x-12 gap-y-8 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
+            <div>
+                <h3 class="font-serif text-[28px] leading-[1.18] tracking-[-0.01em] text-ink sm:text-[32px]">
+                    <a
+                        href={articleUrl(featured)}
+                        class="underline decoration-transparent underline-offset-4 transition hover:decoration-ink"
+                    >
+                        {featured.title}
+                    </a>
+                </h3>
+                <p class="mt-4 text-[13px] leading-relaxed text-ink/80">
+                    {authorLine(featured.authors, 5)}
+                </p>
+                <p class="mt-2 text-[12px] text-muted">
+                    {[
+                        featured.section,
+                        issueLabel(issue),
+                        featured.pages ? `pp. ${featured.pages}` : "",
+                        featured.license,
+                    ]
+                        .filter(Boolean)
+                        .join("  ·  ")}
+                </p>
+                <p class="mt-5 max-w-[62ch] font-serif text-[16px] leading-[1.7] text-ink/85">
+                    {excerpt(featured.abstractEs)}
+                </p>
+                <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px]">
+                    <a
+                        href={articleUrl(featured)}
+                        class="font-medium text-accent underline decoration-accent/30 underline-offset-4 transition hover:decoration-accent"
+                    >
+                        Leer el artículo
+                    </a>
+                    {featured.doi && (
+                        <a
+                            href={featured.doi}
+                            target="_blank"
+                            rel="noopener"
+                            class="text-muted underline decoration-line underline-offset-4 transition hover:text-ink hover:decoration-ink"
+                        >
+                            {doiLabel(featured.doi)}
+                        </a>
+                    )}
+                </div>
+            </div>
+
+            <aside class="border-t border-line pt-5 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">
+                    Palabras clave
+                </p>
+                <div class="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-[12px] text-muted">
+                    {featured.keywordsEs.map((keyword, index) => (
+                        <>
+                            {index > 0 && <span class="text-line">/</span>}
+                            <span>{keyword}</span>
+                        </>
+                    ))}
+                </div>
+
+                <p class="mt-8 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">
+                    En este número
+                </p>
+                <div class="mt-3 space-y-2 text-[13px]">
+                    {others.map((article) => (
+                        <a
+                            href={articleUrl(article)}
+                            class="block border-b border-line pb-2 text-[13px] leading-snug text-ink transition hover:text-accent"
+                        >
+                            {article.title}
+                        </a>
+                    ))}
+                </div>
+            </aside>
+        </div>
+    </section>
+
+    <!-- CONVOCATORIA -->
+    <section class="border-y border-line py-10">
+        <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-start">
+            <div>
+                <h2 class="font-serif text-[26px] leading-tight text-ink">
+                    Convocatoria abierta para el Volumen 2 (2027)
+                </h2>
+                <p class="mt-4 max-w-[62ch] font-serif text-[16px] leading-[1.7] text-ink/85">
+                    La Revista de Ingeniería UCT recibe artículos originales,
+                    notas técnicas y revisiones sobre ingeniería civil,
+                    informática, industrial, eléctrica y ambiental. Se priorizan
+                    trabajos con resultados reproducibles y pertinencia
+                    regional.
+                </p>
+                <div class="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-[13px]">
+                    <a
+                        href="/autores/"
+                        class="font-medium text-accent underline decoration-accent/30 underline-offset-4 transition hover:decoration-accent"
+                    >
+                        Instrucciones para autores
+                    </a>
+                    <a
+                        href="/enviar/"
+                        class="font-medium text-accent underline decoration-accent/30 underline-offset-4 transition hover:decoration-accent"
+                    >
+                        Enviar un artículo
+                    </a>
+                </div>
+            </div>
+            <dl class="border-t border-line pt-4 text-[12px] lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
+                <div class="border-b border-line py-2">
+                    <dt class="text-muted">Recepción</dt>
+                    <dd class="mt-0.5 text-ink">
+                        Abierta hasta el 30 de abril de 2027
+                    </dd>
+                </div>
+                <div class="border-b border-line py-2">
+                    <dt class="text-muted">Revisión</dt>
+                    <dd class="mt-0.5 text-ink">Doble ciego</dd>
+                </div>
+                <div class="py-2">
+                    <dt class="text-muted">Publicación</dt>
+                    <dd class="mt-0.5 text-ink">Continua, tras aceptación</dd>
+                </div>
+            </dl>
+        </div>
+    </section>
+
+    <!-- AVISOS -->
+    <section class="py-12">
+        <div class="mb-5 flex items-baseline justify-between gap-4 border-b border-line pb-3">
+            <h2 class="font-serif text-[22px] text-ink">Avisos</h2>
+            <a
+                href="/politicas/"
+                class="text-[12px] text-muted underline decoration-line underline-offset-4 transition hover:text-ink hover:decoration-ink"
+            >
+                Políticas editoriales
+            </a>
+        </div>
+        <ul class="divide-y divide-line">
+            <li class="grid gap-2 py-4 sm:grid-cols-[110px_minmax(0,1fr)] sm:gap-6">
+                <time
+                    class="text-[11px] uppercase tracking-[0.14em] text-muted"
+                    datetime="2026-11-01"
+                >
+                    1 nov 2026
+                </time>
+                <div>
+                    <p class="font-serif text-[17px] text-ink">
+                        Convocatoria abierta para el Volumen 2
+                    </p>
+                    <p class="mt-1 text-[13px] leading-relaxed text-muted">
+                        Recepción de manuscritos hasta el 30 de abril de 2027.
+                    </p>
+                </div>
+            </li>
+            <li class="grid gap-2 py-4 sm:grid-cols-[110px_minmax(0,1fr)] sm:gap-6">
+                <time
+                    class="text-[11px] uppercase tracking-[0.14em] text-muted"
+                    datetime="2026-10-30"
+                >
+                    30 oct 2026
+                </time>
+                <div>
+                    <p class="font-serif text-[17px] text-ink">
+                        Nuevo número disponible: Vol. 1 · Núm. 2
+                    </p>
+                    <p class="mt-1 text-[13px] leading-relaxed text-muted">
+                        Ya se puede consultar el segundo número del volumen
+                        2026.
+                    </p>
+                </div>
+            </li>
+            <li class="grid gap-2 py-4 sm:grid-cols-[110px_minmax(0,1fr)] sm:gap-6">
+                <time
+                    class="text-[11px] uppercase tracking-[0.14em] text-muted"
+                    datetime="2026-09-15"
+                >
+                    15 sep 2026
+                </time>
+                <div>
+                    <p class="font-serif text-[17px] text-ink">
+                        Política de uso de inteligencia artificial
+                    </p>
+                    <p class="mt-1 text-[13px] leading-relaxed text-muted">
+                        Los autores deben declarar el uso de herramientas de IA
+                        en el manuscrito.
+                    </p>
+                </div>
+            </li>
+        </ul>
+    </section>
+
+    <!-- NÚMEROS -->
+    <section class="pb-12">
+        <div class="mb-6 flex items-baseline justify-between gap-4 border-b border-line pb-3">
+            <h2 class="font-serif text-[22px] text-ink">Números</h2>
+            <a
+                href="/numeros/"
+                class="text-[12px] text-muted underline decoration-line underline-offset-4 transition hover:text-ink hover:decoration-ink"
+            >
+                Ver archivo completo
+            </a>
+        </div>
+        <div class="grid gap-8 sm:grid-cols-2">
+            {previewIssues.map((item) => (
+                <IssueCard issue={item} />
+            ))}
+        </div>
+    </section>
+
+    <!-- INDEXACIÓN -->
+    <section class="border-t border-line py-8">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-baseline sm:justify-between">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">
+                Indexación
+            </p>
+            <p class="text-[11px] text-muted">En proceso de evaluación</p>
+        </div>
+        <p class="mt-3 text-[12px] leading-relaxed text-muted">
+            SciELO · Scopus · DOAJ · Latindex · Google Scholar
+        </p>
+    </section>
+</BaseLayout>

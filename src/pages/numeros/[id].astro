@@ -1,0 +1,140 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Cover from "../../components/Cover.astro";
+import ArticleListItem from "../../components/ArticleListItem.astro";
+import {
+  articleCount,
+  articlesByIssue,
+  formatDate,
+  issueFullLabel,
+  issueUrl,
+  sortedIssues,
+} from "../../lib/journal";
+import { issues, meta, type Issue } from "../../data/journal";
+
+export function getStaticPaths() {
+  return issues.map((issue) => ({ params: { id: issue.id }, props: { issue } }));
+}
+
+interface Props {
+  issue: Issue;
+}
+
+const { issue } = Astro.props;
+const list = articlesByIssue(issue.id);
+const preferred = issue.sectionOrder.filter((section) =>
+  list.some((article) => article.section === section)
+);
+const rest = [
+  ...new Set(
+    list
+      .map((article) => article.section)
+      .filter((section) => !preferred.includes(section))
+  ),
+];
+const orderedSections = [...preferred, ...rest];
+
+const sorted = sortedIssues();
+const index = sorted.findIndex((item) => item.id === issue.id);
+const newer = index > 0 ? sorted[index - 1] : null;
+const older = index >= 0 && index < sorted.length - 1 ? sorted[index + 1] : null;
+
+const description = `${issueFullLabel(issue)}: ${list.length} artículos de la Revista de Ingeniería UCT.`;
+---
+
+<BaseLayout
+  title={`${issueFullLabel(issue)} — Revista de Ingeniería UCT`}
+  description={description}
+  active={issueUrl(issue)}
+>
+  <nav class="flex flex-wrap items-center gap-2 py-6 text-[11px] text-muted">
+    <a href="/" class="underline decoration-line underline-offset-2 hover:text-ink">Inicio</a>
+    <span class="text-line">/</span>
+    <a href="/numeros/" class="underline decoration-line underline-offset-2 hover:text-ink">Números</a>
+    <span class="text-line">/</span>
+    <span>{issueFullLabel(issue)}</span>
+  </nav>
+
+  <section class="grid gap-10 border-t border-line py-10 lg:grid-cols-[200px_minmax(0,1fr)] lg:items-start">
+    <div class="max-w-[200px]">
+      <Cover issue={issue} link={false} />
+    </div>
+    <div class="min-w-0">
+      <h1 class="font-serif text-[34px] leading-tight tracking-[-0.01em]">
+        {issueFullLabel(issue)}
+      </h1>
+      <p class="mt-2 text-[12px] text-muted">
+        {[issue.subtitle, `Publicado el ${formatDate(issue.publishedAt)}`, `${articleCount(issue.id)} artículos`, meta.issn].join("  ·  ")}
+      </p>
+      <p class="mt-7 font-serif text-[19px] leading-snug text-ink">{issue.editorial.title}</p>
+      <p class="mt-3 max-w-[68ch] font-serif text-[16px] leading-[1.7] text-ink/85">
+        {issue.editorial.text}
+      </p>
+      <p class="mt-3 text-[12px] text-muted">{issue.editorial.author}</p>
+      <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px]">
+        <a
+          href="#"
+          data-sample-doc
+          class="inline-flex h-9 items-center rounded-sm bg-accent px-4 text-[12px] font-medium tracking-wide text-white transition hover:bg-[#00679e]"
+        >
+          Descargar número
+        </a>
+        <a href="/enviar/" class="font-medium text-accent underline decoration-accent/30 underline-offset-4 transition hover:decoration-accent">
+          Enviar un artículo
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="pb-12">
+    {
+      orderedSections.map((section) => {
+        const items = list.filter((article) => article.section === section);
+        if (!items.length) return null;
+        return (
+          <section class="border-b border-line pb-8 pt-8">
+            <div class="flex items-baseline justify-between gap-4 border-b border-line pb-3">
+              <h2 class="font-serif text-[24px] leading-tight text-ink">{section}</h2>
+              <span class="text-[11px] uppercase tracking-[0.14em] text-muted">
+                {items.length} {items.length === 1 ? "artículo" : "artículos"}
+              </span>
+            </div>
+            <ul>
+              {items.map((article) => (
+                <ArticleListItem article={article} />
+              ))}
+            </ul>
+          </section>
+        );
+      })
+    }
+  </div>
+
+  <div class="border-t border-line py-6">
+    <div class="flex flex-wrap items-center justify-between gap-4 text-[12px]">
+      <div>
+        {older && (
+          <a
+            href={issueUrl(older)}
+            class="text-muted underline decoration-line underline-offset-4 hover:text-ink hover:decoration-ink"
+          >
+            Anterior: {issueFullLabel(older)}
+          </a>
+        )}
+      </div>
+      <a href="/numeros/" class="text-muted underline decoration-line underline-offset-4 hover:text-ink hover:decoration-ink">
+        Todos los números
+      </a>
+      <div>
+        {newer && (
+          <a
+            href={issueUrl(newer)}
+            class="text-muted underline decoration-line underline-offset-4 hover:text-ink hover:decoration-ink"
+          >
+            Siguiente: {issueFullLabel(newer)}
+          </a>
+        )}
+      </div>
+    </div>
+  </div>
+</BaseLayout>

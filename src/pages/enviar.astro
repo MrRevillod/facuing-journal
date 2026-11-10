@@ -1,0 +1,46 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SubmissionForm from "../components/SubmissionForm.svelte";
+import { keywordSuggestions } from "../data/journal";
+---
+
+<BaseLayout
+  title="Enviar un artículo — Revista de Ingeniería UCT"
+  description="Formulario de envío de artículos a la Revista de Ingeniería UCT."
+  active="/enviar/"
+>
+  <section class="border-b border-line py-10">
+    <h1 class="font-serif text-[32px] leading-tight tracking-[-0.01em]">Enviar un artículo</h1>
+    <p class="mt-3 max-w-[68ch] text-[14px] leading-relaxed text-muted">
+      Completa los datos del manuscrito. Antes de enviar, revisa las
+      <a href="/autores/" class="text-accent underline decoration-accent/30 underline-offset-4 hover:decoration-accent">instrucciones y criterios de aceptación</a>.
+      Recibirás un folio de recepción.
+    </p>
+  </section>
+
+  <div class="grid gap-12 py-10 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-start">
+    <SubmissionForm client:load keywordSuggestions={keywordSuggestions} />
+
+    <aside class="min-w-0 lg:sticky lg:top-6 lg:self-start lg:border-l lg:border-line lg:pl-8">
+      <h2 class="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Antes de enviar</h2>
+      <ul class="mt-3 space-y-2 text-[12px] leading-relaxed text-ink/85">
+        <li>Manuscrito en PDF o DOCX.</li>
+        <li>Resumen y palabras clave en español e inglés.</li>
+        <li>Autores con afiliación, correo y ORCID.</li>
+        <li>Declaraciones éticas y de conflicto de interés.</li>
+        <li>Revisión de las instrucciones para autores.</li>
+      </ul>
+
+      <h2 class="mt-8 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Contacto</h2>
+      <p class="mt-3 text-[12px] leading-relaxed text-muted">
+        Dudas sobre el envío:<br />
+        <a href="mailto:revista.ingenieria@uct.cl" class="text-accent underline decoration-accent/30 underline-offset-4 hover:decoration-accent">revista.ingenieria@uct.cl</a>
+      </p>
+
+      <p class="mt-8 border-t border-line pt-4 text-[11px] leading-relaxed text-muted">
+        Prototipo de diagramación. El formulario no envía archivos reales; la recepción se
+        simula para revisar el flujo.
+      </p>
+    </aside>
+  </div>
+</BaseLayout>

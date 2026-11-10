@@ -1,0 +1,86 @@
+---
+import "../styles/global.css";
+import Footer from "../components/Footer.astro";
+import Masthead from "../components/Masthead.astro";
+import Preheader from "../components/Preheader.astro";
+import { meta } from "../data/journal";
+
+interface Props {
+    title: string;
+    description?: string;
+    active?: string;
+    canonical?: string;
+    type?: "website" | "article";
+}
+
+const {
+    title,
+    description = "",
+    active = "",
+    canonical,
+    type = "website",
+} = Astro.props;
+
+const site = "https://revista.uct.cl";
+const url = canonical ?? new URL(Astro.url.pathname, site).href;
+---
+
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{title}</title>
+        {description && <meta name="description" content={description} />}
+        <link rel="canonical" href={url} />
+        <meta property="og:type" content={type} />
+        <meta property="og:site_name" content={meta.name} />
+        <meta property="og:title" content={title} />
+        {description && (
+            <meta property="og:description" content={description} />
+        )}
+        <meta property="og:url" content={url} />
+        <meta name="twitter:card" content="summary" />
+        <link rel="icon" href="/assets/logo-uct.webp" />
+        <slot name="head" />
+    </head>
+    <body class="bg-paper font-sans text-ink antialiased">
+        <Preheader />
+        <Masthead active={active} />
+        <main class="mx-auto max-w-6xl px-6">
+            <slot />
+        </main>
+        <Footer />
+
+        <script>
+            let toastTimer: number | undefined;
+
+            const showToast = (message: string) => {
+                let el = document.getElementById("site-toast");
+                if (!el) {
+                    el = document.createElement("div");
+                    el.id = "site-toast";
+                    el.style.cssText =
+                        "position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);max-width:90vw;background:#1a1a1a;color:#fcfcfb;padding:.65rem 1rem;border:1px solid #e7e5e0;font-size:12px;line-height:1.4;z-index:60;text-align:center;";
+                    document.body.appendChild(el);
+                }
+                el.textContent = message;
+                el.style.display = "block";
+                window.clearTimeout(toastTimer);
+                toastTimer = window.setTimeout(() => {
+                    el.style.display = "none";
+                }, 2800);
+            };
+
+            document.addEventListener("click", (event) => {
+                const target = event.target;
+                if (!(target instanceof Element)) return;
+                if (!target.closest("[data-sample-doc]")) return;
+                event.preventDefault();
+                showToast(
+                    "Documento de muestra: el PDF se habilitará cuando el artículo esté publicado.",
+                );
+            });
+        </script>
+    </body>
+</html>

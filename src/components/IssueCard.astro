@@ -1,0 +1,37 @@
+---
+import type { Issue } from "../data/journal";
+import { articleCount, formatDate, issueLabel, issueUrl } from "../lib/journal";
+import Cover from "./Cover.astro";
+
+interface Props {
+  issue: Issue;
+  compact?: boolean;
+}
+
+const { issue, compact = false } = Astro.props;
+---
+
+<div class:list={["grid gap-4 sm:grid-cols-[150px_minmax(0,1fr)]", compact && "max-w-[190px]"]}>
+  <div class="max-w-[150px]">
+    <Cover issue={issue} />
+  </div>
+  <div class="min-w-0">
+    <p class="text-[11px] uppercase tracking-[0.16em] text-muted">{issue.subtitle}</p>
+    <a
+      href={issueUrl(issue)}
+      class="mt-2 block font-serif text-[19px] leading-tight text-ink underline decoration-transparent underline-offset-2 transition hover:decoration-ink"
+    >
+      {issueLabel(issue)}
+    </a>
+    <p class="mt-2 text-[12px] text-muted">
+      {articleCount(issue.id)} artículos
+    </p>
+    <p class="mt-1 text-[11px] text-muted">{formatDate(issue.publishedAt)}</p>
+    <a
+      href={issueUrl(issue)}
+      class="mt-3 inline-block text-[12px] text-accent underline decoration-accent/30 underline-offset-4 transition hover:decoration-accent"
+    >
+      Ver número
+    </a>
+  </div>
+</div>

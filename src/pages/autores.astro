@@ -1,0 +1,120 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+<BaseLayout title="Para autores — Revista de Ingeniería UCT" description="Instrucciones y criterios de aceptación para autores de la Revista de Ingeniería UCT." active="/autores/">
+<section class="border-b border-line py-10">
+        <h1 class="font-serif text-[32px] leading-tight tracking-[-0.01em]">Instrucciones y criterios de aceptación</h1>
+        <p class="mt-3 max-w-[68ch] text-[14px] leading-relaxed text-muted">
+          La Revista de Ingeniería UCT recibe trabajos originales e inéditos que aporten
+          conocimiento o evidencia aplicada a problemas de ingeniería. Antes de enviar,
+          revisa los criterios, el formato y las declaraciones requeridas.
+        </p>
+        <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px]">
+          <a href="/enviar/" class="inline-flex h-9 items-center rounded-sm bg-accent px-4 text-[12px] font-medium tracking-wide text-white transition hover:bg-[#00679e]">
+            Enviar un artículo
+          </a>
+          <a href="#" data-sample-doc class="text-accent underline decoration-accent/30 underline-offset-4 transition hover:decoration-accent">
+            Descargar plantilla
+          </a>
+        </div>
+      </section>
+
+      <section class="grid gap-12 py-10 lg:grid-cols-[minmax(0,1fr)_280px]">
+        <div class="max-w-[72ch]">
+          <h2 class="border-b border-line pb-2 font-serif text-[22px]">Alcance y tipos de artículo</h2>
+          <p class="mt-4 font-serif text-[16px] leading-[1.7] text-ink/85">
+            Se aceptan trabajos en ingeniería civil, informática, industrial, eléctrica,
+            ambiental y áreas afines. Los manuscritos pueden presentarse en español o inglés.
+          </p>
+          <ul class="mt-4 space-y-2 text-[14px] leading-relaxed text-ink/85">
+            <li><strong class="font-medium text-ink">Artículo de investigación:</strong> resultados originales con método, evidencia y discusión.</li>
+            <li><strong class="font-medium text-ink">Nota técnica:</strong> desarrollo, experiencia o solución aplicada de interés para la comunidad.</li>
+            <li><strong class="font-medium text-ink">Artículo de revisión:</strong> síntesis crítica y actualizada de un campo, con preguntas y vacíos identificados.</li>
+          </ul>
+
+          <h2 class="mt-10 border-b border-line pb-2 font-serif text-[22px]">Criterios de aceptación</h2>
+          <ul class="mt-4 space-y-2 text-[14px] leading-relaxed text-ink/85">
+            <li>Originalidad y aporte respecto del estado del arte.</li>
+            <li>Claridad del problema, objetivos y preguntas de investigación.</li>
+            <li>Solidez metodológica y coherencia entre método, datos y conclusiones.</li>
+            <li>Resultados verificables, discusión crítica y limitaciones explícitas.</li>
+            <li>Pertinencia para la ingeniería y, cuando corresponda, para el territorio.</li>
+            <li>Escritura clara, estructura completa y referencias actualizadas.</li>
+            <li>Cumplimiento de las declaraciones éticas y de autoría.</li>
+          </ul>
+
+          <h2 class="mt-10 border-b border-line pb-2 font-serif text-[22px]">Proceso de revisión</h2>
+          <ol class="mt-4 space-y-3 text-[14px] leading-relaxed text-ink/85">
+            <li><strong class="font-medium text-ink">1. Admisión formal:</strong> el comité verifica que el envío cumpla los requisitos mínimos.</li>
+            <li><strong class="font-medium text-ink">2. Evaluación editorial:</strong> se revisa alcance, originalidad y pertinencia antes de asignar revisores.</li>
+            <li><strong class="font-medium text-ink">3. Revisión doble ciego:</strong> al menos dos especialistas evalúan el manuscrito.</li>
+            <li><strong class="font-medium text-ink">4. Decisión:</strong> aceptado, aceptado con cambios, nuevo envío o rechazo.</li>
+            <li><strong class="font-medium text-ink">5. Edición y publicación:</strong> corrección de estilo, maquetación y publicación continua.</li>
+          </ol>
+
+          <h2 class="mt-10 border-b border-line pb-2 font-serif text-[22px]">Formato del manuscrito</h2>
+          <ul class="mt-4 space-y-2 text-[14px] leading-relaxed text-ink/85">
+            <li>Archivo editable en formato DOCX o LaTeX, más una versión PDF para revisión.</li>
+            <li>Título, resumen y palabras clave en español e inglés.</li>
+            <li>Resumen de 150 a 250 palabras; entre 3 y 6 palabras clave por idioma.</li>
+            <li>Autores con nombre completo, afiliación, correo y ORCID.</li>
+            <li>Figuras y tablas numeradas, citadas en el texto y con fuentes legibles.</li>
+            <li>Referencias en estilo APA 7 u otro estilo declarado por la revista.</li>
+            <li>Declaración de financiamiento, conflicto de interés y uso de IA.</li>
+          </ul>
+
+          <h2 class="mt-10 border-b border-line pb-2 font-serif text-[22px]">Declaraciones requeridas</h2>
+          <ul class="mt-4 space-y-2 text-[14px] leading-relaxed text-ink/85">
+            <li>Trabajo original e inédito, no enviado simultáneamente a otra publicación.</li>
+            <li>Autoría acordada por todas las personas firmantes.</li>
+            <li>Conflicto de interés declarado, incluso si no existe.</li>
+            <li>Aprobación ética cuando el estudio involucre personas o datos sensibles.</li>
+            <li>Uso de herramientas de inteligencia artificial declarado en el manuscrito.</li>
+            <li>Aceptación de la licencia de acceso abierto y de las políticas editoriales.</li>
+          </ul>
+
+          <h2 class="mt-10 border-b border-line pb-2 font-serif text-[22px]">Envío</h2>
+          <p class="mt-4 font-serif text-[16px] leading-[1.7] text-ink/85">
+            El envío se realiza mediante el formulario de la revista. Recibirás un folio de
+            recepción y una confirmación por correo. La postulación no garantiza la aceptación.
+          </p>
+          <a href="/enviar/" class="mt-5 inline-flex h-9 items-center rounded-sm bg-accent px-4 text-[12px] font-medium tracking-wide text-white transition hover:bg-[#00679e]">
+            Iniciar envío
+          </a>
+        </div>
+
+        <aside class="min-w-0 lg:sticky lg:top-6 lg:self-start lg:border-l lg:border-line lg:pl-8">
+          <h2 class="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Convocatoria</h2>
+          <dl class="mt-3 text-[12px]">
+            <div class="border-b border-line py-2">
+              <dt class="text-muted">Volumen</dt><dd class="mt-0.5 text-ink">Vol. 2 (2027)</dd>
+            </div>
+            <div class="border-b border-line py-2">
+              <dt class="text-muted">Recepción</dt><dd class="mt-0.5 text-ink">Hasta el 30 de abril de 2027</dd>
+            </div>
+            <div class="border-b border-line py-2">
+              <dt class="text-muted">Publicación</dt><dd class="mt-0.5 text-ink">Continua</dd>
+            </div>
+            <div class="py-2">
+              <dt class="text-muted">Idiomas</dt><dd class="mt-0.5 text-ink">Español e inglés</dd>
+            </div>
+          </dl>
+
+          <h2 class="mt-8 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Contacto editorial</h2>
+          <p class="mt-3 text-[13px] leading-relaxed text-ink/85">
+            Facultad de Ingeniería<br />
+            Universidad Católica de Temuco
+          </p>
+          <a href="mailto:revista.ingenieria@uct.cl" class="mt-2 inline-block text-[12px] text-accent underline decoration-accent/30 underline-offset-4 transition hover:decoration-accent">
+            revista.ingenieria@uct.cl
+          </a>
+
+          <div class="mt-8 border-t border-line pt-4">
+            <p class="text-[11px] leading-relaxed text-muted">
+              Prototipo de diagramación. Los criterios y plazos son de referencia y deben ser
+              validados por el comité editorial.
+            </p>
+          </div>
+        </aside>
+      </section>
+</BaseLayout>

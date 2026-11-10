@@ -1,0 +1,286 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Cover from "../../components/Cover.astro";
+import {
+  articleUrl,
+  authorLine,
+  citation,
+  doiLabel,
+  formatDate,
+  issueFullLabel,
+  issueLabel,
+  issueUrl,
+} from "../../lib/journal";
+import { articles, issues, type Article } from "../../data/journal";
+
+export function getStaticPaths() {
+  return articles.map((article) => ({ params: { id: article.id }, props: { article } }));
+}
+
+interface Props {
+  article: Article;
+}
+
+const { article } = Astro.props;
+const currentIssue = issues.find((item) => item.id === article.issueId);
+const related = articles
+  .filter((item) => item.issueId === article.issueId && item.id !== article.id)
+  .slice(0, 3);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ScholarlyArticle",
+  headline: article.title,
+  datePublished: article.publishedAt,
+  author: article.authors.map((author) => ({ "@type": "Person", name: author.name })),
+  isPartOf: {
+    "@type": "PublicationIssue",
+    issueNumber: String(currentIssue?.number ?? ""),
+    datePublished: currentIssue?.publishedAt,
+  },
+  identifier: article.doi,
+  pagination: article.pages,
+  inLanguage: "es",
+};
+---
+
+<BaseLayout
+  title={`${article.title} — Revista de Ingeniería UCT`}
+  description={article.abstractEs.slice(0, 180)}
+  active="/numeros/"
+  type="article"
+>
+  <Fragment slot="head">
+    <meta name="citation_title" content={article.title} />
+    {
+      article.authors.map((author) => (
+        <meta name="citation_author" content={author.name} />
+      ))
+    }
+    <meta name="citation_publication_date" content={article.publishedAt} />
+    <meta name="citation_journal_title" content="Revista de Ingeniería UCT" />
+    {article.doi && <meta name="citation_doi" content={article.doi} />}
+    {currentIssue && (
+      <meta name="citation_volume" content={String(currentIssue.volume)} />
+    )}
+    {currentIssue && (
+      <meta name="citation_issue" content={String(currentIssue.number)} />
+    )}
+    <meta name="citation_firstpage" content={article.pages.split("-")[0]} />
+    <meta name="citation_lastpage" content={article.pages.split("-")[1] ?? ""} />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </Fragment>
+
+  <nav class="flex flex-wrap items-center gap-2 py-6 text-[11px] text-muted">
+    <a href="/" class="underline decoration-line underline-offset-2 hover:text-ink">Inicio</a>
+    <span class="text-line">/</span>
+    <a href="/numeros/" class="underline decoration-line underline-offset-2 hover:text-ink">Números</a>
+    <span class="text-line">/</span>
+    {currentIssue && (
+      <a href={issueUrl(currentIssue)} class="underline decoration-line underline-offset-2 hover:text-ink">
+        {issueFullLabel(currentIssue)}
+      </a>
+    )}
+    <span class="text-line">/</span>
+    <span>Artículo</span>
+  </nav>
+
+  <div class="grid gap-12 border-t border-line py-10 lg:grid-cols-[minmax(0,1fr)_300px]">
+    <article class="min-w-0">
+      <h1 class="font-serif text-[30px] leading-[1.18] tracking-[-0.01em] sm:text-[34px]">
+        {article.title}
+      </h1>
+
+      <div class="mt-6 space-y-3 border-l border-line pl-4">
+        {
+          article.authors.map((author) => (
+            <div class="text-[14px] leading-snug">
+              <span class="text-ink">{author.name}</span>
+              {author.corresponding && (
+                <span class="ml-2 text-[11px] uppercase tracking-[0.12em] text-accent">
+                  Correspondencia
+                </span>
+              )}
+              {author.orcid && (
+                <a
+                  href={author.orcid}
+                  target="_blank"
+                  rel="noopener"
+                  class="ml-2 text-[11px] uppercase tracking-[0.12em] text-accent underline decoration-accent/30 underline-offset-2 hover:decoration-accent"
+                >
+                  ORCID
+                </a>
+              )}
+              {author.affiliation && (
+                <span class="mt-0.5 block text-[11px] leading-snug text-muted">
+                  {author.affiliation}
+                </span>
+              )}
+              {author.email && (
+                <a
+                  href={`mailto:${author.email}`}
+                  class="mt-0.5 block text-[11px] text-muted underline decoration-line underline-offset-2 hover:text-ink"
+                >
+                  {author.email}
+                </a>
+              )}
+            </div>
+          ))
+        }
+      </div>
+
+      <p class="mt-6 text-[12px] text-muted">
+        {[
+          article.section,
+          currentIssue ? issueLabel(currentIssue) : "",
+          article.pages ? `pp. ${article.pages}` : "",
+          formatDate(article.publishedAt),
+          article.license,
+        ]
+          .filter(Boolean)
+          .join("  ·  ")}
+      </p>
+
+      <div class="mt-8 border-t border-line pt-6">
+        <h2 class="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Resumen</h2>
+        <p class="mt-3 max-w-[68ch] font-serif text-[16px] leading-[1.7] text-ink/90">
+          {article.abstractEs}
+        </p>
+      </div>
+
+      <div class="mt-8 border-t border-line pt-6">
+        <h2 class="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Abstract</h2>
+        <p class="mt-3 max-w-[68ch] font-serif text-[16px] leading-[1.7] text-ink/90">
+          {article.abstractEn}
+        </p>
+      </div>
+
+      <div class="mt-8 border-t border-line pt-5">
+        <h2 class="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Palabras clave</h2>
+        <p class="mt-2 text-[13px] leading-relaxed text-ink/80">{article.keywordsEs.join(" · ")}</p>
+        <p class="mt-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Keywords</p>
+        <p class="mt-2 text-[13px] leading-relaxed text-ink/80">{article.keywordsEn.join(" · ")}</p>
+      </div>
+    </article>
+
+    <aside class="min-w-0 lg:sticky lg:top-6 lg:self-start lg:border-l lg:border-line lg:pl-8">
+      {currentIssue && (
+        <div class="max-w-[170px]">
+          <Cover issue={currentIssue} />
+        </div>
+      )}
+
+      <h2 class="mt-6 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Ficha</h2>
+      <dl class="mt-3 text-[12px]">
+        <div class="grid grid-cols-[72px_1fr] gap-3 border-b border-line py-2">
+          <dt class="text-muted">Número</dt>
+          <dd class="text-ink">{currentIssue ? issueFullLabel(currentIssue) : "—"}</dd>
+        </div>
+        <div class="grid grid-cols-[72px_1fr] gap-3 border-b border-line py-2">
+          <dt class="text-muted">Sección</dt>
+          <dd class="text-ink">{article.section}</dd>
+        </div>
+        <div class="grid grid-cols-[72px_1fr] gap-3 border-b border-line py-2">
+          <dt class="text-muted">Páginas</dt>
+          <dd class="text-ink">{article.pages || "—"}</dd>
+        </div>
+        <div class="grid grid-cols-[72px_1fr] gap-3 border-b border-line py-2">
+          <dt class="text-muted">Publicado</dt>
+          <dd class="text-ink">{formatDate(article.publishedAt)}</dd>
+        </div>
+        <div class="grid grid-cols-[72px_1fr] gap-3 py-2">
+          <dt class="text-muted">Licencia</dt>
+          <dd class="text-ink">{article.license}</dd>
+        </div>
+      </dl>
+
+      <div class="mt-4 flex flex-col gap-2">
+        <a
+          href={article.pdf}
+          data-sample-doc
+          class="flex w-full items-center justify-center rounded-sm bg-accent px-4 py-2.5 text-[12px] font-medium tracking-wide text-white transition hover:bg-[#00679e]"
+        >
+          Descargar PDF
+        </a>
+        <a
+          href={article.html}
+          data-sample-doc
+          class="flex w-full items-center justify-center border border-line px-4 py-2.5 text-[12px] tracking-wide text-muted transition hover:border-ink hover:text-ink"
+        >
+          Ver HTML
+        </a>
+        {article.doi && (
+          <a
+            href={article.doi}
+            target="_blank"
+            rel="noopener"
+            class="flex w-full items-center justify-center border border-line px-4 py-2.5 text-[12px] tracking-wide text-muted transition hover:border-ink hover:text-ink"
+          >
+            {doiLabel(article.doi)}
+          </a>
+        )}
+      </div>
+
+      <div class="mt-6 border-t border-line pt-4">
+        <h2 class="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Cómo citar</h2>
+        <p id="citation" class="mt-2 break-words font-serif text-[12.5px] leading-relaxed text-ink/80">
+          {citation(article)}
+        </p>
+        <button
+          id="copy-citation"
+          type="button"
+          class="mt-2 text-[11px] text-accent underline decoration-accent/30 underline-offset-4 transition hover:decoration-accent"
+        >
+          Copiar cita
+        </button>
+      </div>
+    </aside>
+  </div>
+
+  <section class="border-t border-line py-10">
+    <div class="mb-5 flex items-baseline justify-between gap-4">
+      <h2 class="font-serif text-[22px] text-ink">También en este número</h2>
+      <a
+        href={currentIssue ? issueUrl(currentIssue) : "/numeros/"}
+        class="text-[12px] text-muted underline decoration-line underline-offset-4 transition hover:text-ink hover:decoration-ink"
+      >
+        Ver sumario
+      </a>
+    </div>
+    <ul class="divide-y divide-line">
+      {
+        related.map((item) => (
+          <li class="py-4">
+            <a
+              href={articleUrl(item)}
+              class="font-serif text-[17px] leading-snug text-ink underline decoration-transparent underline-offset-2 transition hover:decoration-ink"
+            >
+              {item.title}
+            </a>
+            <p class="mt-1 text-[12px] text-muted">
+              {authorLine(item.authors, 4)} · pp. {item.pages}
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const button = document.getElementById("copy-citation") as HTMLButtonElement | null;
+      const citationEl = document.getElementById("citation");
+      if (!button || !citationEl) return;
+
+      button.onclick = async () => {
+        try {
+          await navigator.clipboard.writeText(citationEl.textContent?.trim() ?? "");
+          button.textContent = "Cita copiada";
+          setTimeout(() => (button.textContent = "Copiar cita"), 1600);
+        } catch {
+          button.textContent = "No se pudo copiar";
+        }
+      };
+    });
+  </script>
+</BaseLayout>

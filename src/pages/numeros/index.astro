@@ -1,0 +1,59 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import IssueCard from "../../components/IssueCard.astro";
+import { issues, volumes } from "../../data/journal";
+
+const sortedVolumes = [...volumes].sort((a, b) => b.year - a.year);
+---
+
+<BaseLayout
+  title="Números — Revista de Ingeniería UCT"
+  description="Archivo de volúmenes y números de la Revista de Ingeniería UCT."
+  active="/numeros/"
+>
+  <section class="py-10">
+    <h1 class="font-serif text-[32px] leading-tight tracking-[-0.01em]">Números</h1>
+    <p class="mt-3 max-w-[62ch] text-[14px] leading-relaxed text-muted">
+      Volúmenes y números publicados. Cada número reúne artículos de investigación, notas
+      técnicas y revisiones, con acceso abierto a los textos completos.
+    </p>
+    <div class="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-[13px]">
+      <a href="/buscar/" class="font-medium text-accent underline decoration-accent/30 underline-offset-4 transition hover:decoration-accent">
+        Buscar artículos
+      </a>
+      <a href="/enviar/" class="font-medium text-accent underline decoration-accent/30 underline-offset-4 transition hover:decoration-accent">
+        Enviar un artículo
+      </a>
+    </div>
+  </section>
+
+  <div class="space-y-14 pb-12">
+    {
+      sortedVolumes.map((volume) => {
+        const volumeIssues = issues
+          .filter((issue) => issue.volumeId === volume.id)
+          .sort((a, b) => b.number - a.number);
+
+        return (
+          <section>
+            <div class="flex items-baseline justify-between gap-4 border-b border-line pb-3">
+              <h2 class="font-serif text-[24px] leading-tight text-ink">{volume.title}</h2>
+              <span class="text-[11px] uppercase tracking-[0.14em] text-muted">
+                {volumeIssues.length} {volumeIssues.length === 1 ? "número" : "números"}
+              </span>
+            </div>
+            <p class="mt-3 max-w-[68ch] text-[13px] leading-relaxed text-muted">
+              {volume.description}
+            </p>
+
+            <div class="mt-6 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {volumeIssues.map((issue) => (
+                <IssueCard issue={issue} />
+              ))}
+            </div>
+          </section>
+        );
+      })
+    }
+  </div>
+</BaseLayout>
