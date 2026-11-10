@@ -1,5 +1,6 @@
 <script lang="ts">
   import { safeParse } from "valibot";
+  import { tick } from "svelte";
   import Select from "./Select.svelte";
   import {
     collectIssues,
@@ -53,8 +54,17 @@
     return false;
   }
 
+  function focusFirstError() {
+    tick().then(() => {
+      document.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+    });
+  }
+
   function next() {
-    if (!validate(step)) return;
+    if (!validate(step)) {
+      focusFirstError();
+      return;
+    }
     step = Math.min(5, step + 1);
   }
 
@@ -127,7 +137,10 @@
 
   function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
-    if (!validate(5)) return;
+    if (!validate(5)) {
+      focusFirstError();
+      return;
+    }
     folio = `RIUCT-2026-${String(Math.floor(Math.random() * 900) + 100)}`;
     submitted = true;
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -171,6 +184,7 @@
         <button
           type="button"
           onclick={() => goTo(index + 1)}
+          aria-current={step === index + 1 ? "step" : undefined}
           class="border-b-2 pb-0.5 {step === index + 1
             ? 'border-accent text-ink'
             : 'border-transparent hover:text-ink'}"
@@ -194,13 +208,20 @@
               ariaLabel="Tipo de manuscrito"
             />
           </div>
-          {#if err("type")}<p class={errorText}>{err("type")}</p>{/if}
+          {#if err("type")}<p class={errorText} role="alert">{err("type")}</p>{/if}
         </div>
 
         <div>
           <label class={label} for="f-title">Título</label>
-          <input id="f-title" bind:value={data.title} class={input} placeholder="Título del manuscrito" />
-          {#if err("title")}<p class={errorText}>{err("title")}</p>{/if}
+          <input
+            id="f-title"
+            bind:value={data.title}
+            class={input}
+            placeholder="Título del manuscrito"
+            aria-invalid={err("title") ? "true" : undefined}
+            aria-describedby={err("title") ? "err-title" : undefined}
+          />
+          {#if err("title")}<p id="err-title" class={errorText} role="alert">{err("title")}</p>{/if}
         </div>
 
         <div>
@@ -208,11 +229,13 @@
           <textarea
             id="f-abstract-es"
             bind:value={data.abstractEs}
+            aria-invalid={err("abstractEs") ? "true" : undefined}
+            aria-describedby={err("abstractEs") ? "err-abstractEs" : undefined}
             rows="5"
             class="mt-1.5 w-full resize-y border border-line bg-transparent p-3 font-serif text-[15px] leading-relaxed outline-none placeholder:text-muted focus:border-ink"
             placeholder="150 a 250 palabras"
           ></textarea>
-          {#if err("abstractEs")}<p class={errorText}>{err("abstractEs")}</p>{/if}
+          {#if err("abstractEs")}<p id="err-abstractEs" class={errorText} role="alert">{err("abstractEs")}</p>{/if}
         </div>
 
         <div>
@@ -220,11 +243,13 @@
           <textarea
             id="f-abstract-en"
             bind:value={data.abstractEn}
+            aria-invalid={err("abstractEn") ? "true" : undefined}
+            aria-describedby={err("abstractEn") ? "err-abstractEn" : undefined}
             rows="5"
             class="mt-1.5 w-full resize-y border border-line bg-transparent p-3 font-serif text-[15px] leading-relaxed outline-none placeholder:text-muted focus:border-ink"
             placeholder="Abstract in English"
           ></textarea>
-          {#if err("abstractEn")}<p class={errorText}>{err("abstractEn")}</p>{/if}
+          {#if err("abstractEn")}<p id="err-abstractEn" class={errorText} role="alert">{err("abstractEn")}</p>{/if}
         </div>
 
         <div class="grid gap-6 sm:grid-cols-2">
@@ -256,7 +281,7 @@
                 </button>
               {/each}
             </div>
-            {#if err("keywordsEs")}<p class={errorText}>{err("keywordsEs")}</p>{/if}
+            {#if err("keywordsEs")}<p class={errorText} role="alert">{err("keywordsEs")}</p>{/if}
           </div>
 
           <div>
@@ -280,7 +305,7 @@
                 </button>
               {/each}
             </div>
-            {#if err("keywordsEn")}<p class={errorText}>{err("keywordsEn")}</p>{/if}
+            {#if err("keywordsEn")}<p class={errorText} role="alert">{err("keywordsEn")}</p>{/if}
           </div>
         </div>
       </section>
@@ -336,7 +361,7 @@
           </div>
         {/each}
 
-        {#if err("authors")}<p class={errorText}>{err("authors")}</p>{/if}
+        {#if err("authors")}<p class={errorText} role="alert">{err("authors")}</p>{/if}
       </section>
 
       <!-- PASO 3 -->
@@ -361,7 +386,7 @@
             Usar archivo de muestra
           </button>
           {#if manuscriptName}<p class="mt-1 text-[11px] text-muted">{manuscriptName}</p>{/if}
-          {#if err("manuscript")}<p class={errorText}>{err("manuscript")}</p>{/if}
+          {#if err("manuscript")}<p class={errorText} role="alert">{err("manuscript")}</p>{/if}
         </div>
 
         <div class="border-t border-line pt-4">
@@ -404,7 +429,7 @@
           {/each}
         </div>
         {#if err("declarations.original")}
-          <p class={errorText}>{err("declarations.original")}</p>
+          <p class={errorText} role="alert">{err("declarations.original")}</p>
         {/if}
 
         <div class="border-t border-line pt-4">

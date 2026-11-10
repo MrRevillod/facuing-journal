@@ -10,6 +10,8 @@ import {
   issueFullLabel,
   issueLabel,
   issueUrl,
+  pageRange,
+  summary,
 } from "../../lib/journal";
 import { articles, issues, type Article } from "../../data/journal";
 
@@ -27,6 +29,20 @@ const related = articles
   .filter((item) => item.issueId === article.issueId && item.id !== article.id)
   .slice(0, 3);
 
+const exportData = {
+  id: article.id,
+  title: article.title,
+  authors: article.authors.map((author) => author.name),
+  journal: "Revista de Ingeniería UCT",
+  year: currentIssue?.year ?? Number(article.publishedAt.slice(0, 4)),
+  volume: currentIssue?.volume ?? "",
+  number: currentIssue?.number ?? "",
+  firstPage: article.pages.split("-")[0] ?? "",
+  lastPage: article.pages.split("-")[1] ?? "",
+  date: article.publishedAt,
+  doi: article.doi,
+};
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "ScholarlyArticle",
@@ -38,7 +54,7 @@ const jsonLd = {
     issueNumber: String(currentIssue?.number ?? ""),
     datePublished: currentIssue?.publishedAt,
   },
-  identifier: article.doi,
+  ...(article.doi ? { identifier: article.doi } : {}),
   pagination: article.pages,
   inLanguage: "es",
 };
@@ -46,7 +62,7 @@ const jsonLd = {
 
 <BaseLayout
   title={`${article.title} | Revista de Ingeniería UCT`}
-  description={article.abstractEs.slice(0, 180)}
+  description={summary(article.abstractEs)}
   active="/numeros/"
   type="article"
 >
@@ -102,21 +118,16 @@ const jsonLd = {
                 </span>
               )}
               {author.orcid && (
-                <a
-                  href={author.orcid}
-                  target="_blank"
-                  rel="noopener"
-                  class="ml-2 text-[11px] uppercase tracking-[0.12em] text-accent underline decoration-accent/30 underline-offset-2 hover:decoration-accent"
-                >
-                  ORCID
-                </a>
+                <span class="ml-2 text-[11px] uppercase tracking-[0.12em] text-muted">
+                  ORCID {author.orcid.replace(/^https?:\/\/orcid\.org\//, "")}
+                </span>
               )}
               {author.affiliation && (
                 <span class="mt-0.5 block text-[11px] leading-snug text-muted">
                   {author.affiliation}
                 </span>
               )}
-              {author.email && (
+              {author.corresponding && author.email && (
                 <a
                   href={`mailto:${author.email}`}
                   class="mt-0.5 block text-[11px] text-muted underline decoration-line underline-offset-2 hover:text-ink"
@@ -133,7 +144,7 @@ const jsonLd = {
         {[
           article.section,
           currentIssue ? issueLabel(currentIssue) : "",
-          article.pages ? `pp. ${article.pages}` : "",
+          article.pages ? `pp. ${pageRange(article.pages)}` : "",
           formatDate(article.publishedAt),
           article.license,
         ]
@@ -150,7 +161,7 @@ const jsonLd = {
 
       <div class="mt-8 border-t border-line pt-6">
         <h2 class="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Abstract</h2>
-        <p class="mt-3 max-w-[68ch] font-serif text-[16px] leading-[1.7] text-ink/90">
+        <p lang="en" class="mt-3 max-w-[68ch] font-serif text-[16px] leading-[1.7] text-ink/90">
           {article.abstractEn}
         </p>
       </div>
@@ -159,7 +170,7 @@ const jsonLd = {
         <h2 class="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Palabras clave</h2>
         <p class="mt-2 text-[13px] leading-relaxed text-ink/80">{article.keywordsEs.join(" · ")}</p>
         <p class="mt-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Keywords</p>
-        <p class="mt-2 text-[13px] leading-relaxed text-ink/80">{article.keywordsEn.join(" · ")}</p>
+        <p lang="en" class="mt-2 text-[13px] leading-relaxed text-ink/80">{article.keywordsEn.join(" · ")}</p>
       </div>
     </article>
 
@@ -182,11 +193,23 @@ const jsonLd = {
         </div>
         <div class="grid grid-cols-[72px_1fr] gap-3 border-b border-line py-2">
           <dt class="text-muted">Páginas</dt>
-          <dd class="text-ink">{article.pages || "—"}</dd>
+          <dd class="text-ink">{article.pages ? pageRange(article.pages) : "—"}</dd>
+        </div>
+        <div class="grid grid-cols-[72px_1fr] gap-3 border-b border-line py-2">
+          <dt class="text-muted">Recibido</dt>
+          <dd class="text-ink">{formatDate(article.receivedAt)}</dd>
+        </div>
+        <div class="grid grid-cols-[72px_1fr] gap-3 border-b border-line py-2">
+          <dt class="text-muted">Aceptado</dt>
+          <dd class="text-ink">{formatDate(article.acceptedAt)}</dd>
         </div>
         <div class="grid grid-cols-[72px_1fr] gap-3 border-b border-line py-2">
           <dt class="text-muted">Publicado</dt>
           <dd class="text-ink">{formatDate(article.publishedAt)}</dd>
+        </div>
+        <div class="grid grid-cols-[72px_1fr] gap-3 border-b border-line py-2">
+          <dt class="text-muted">DOI</dt>
+          <dd class="text-ink">{article.doi ? doiLabel(article.doi) : "En trámite"}</dd>
         </div>
         <div class="grid grid-cols-[72px_1fr] gap-3 py-2">
           <dt class="text-muted">Licencia</dt>
@@ -209,16 +232,6 @@ const jsonLd = {
         >
           Ver HTML
         </a>
-        {article.doi && (
-          <a
-            href={article.doi}
-            target="_blank"
-            rel="noopener"
-            class="flex w-full items-center justify-center border border-line px-4 py-2.5 text-[12px] tracking-wide text-muted transition hover:border-ink hover:text-ink"
-          >
-            {doiLabel(article.doi)}
-          </a>
-        )}
       </div>
 
       <div class="mt-6 border-t border-line pt-4">
@@ -226,13 +239,29 @@ const jsonLd = {
         <p id="citation" class="mt-2 break-words font-serif text-[12.5px] leading-relaxed text-ink/80">
           {citation(article)}
         </p>
-        <button
-          id="copy-citation"
-          type="button"
-          class="mt-2 text-[11px] text-accent underline decoration-accent/30 underline-offset-4 transition hover:decoration-accent"
-        >
-          Copiar cita
-        </button>
+        <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px]">
+          <button
+            id="copy-citation"
+            type="button"
+            class="text-accent underline decoration-accent/30 underline-offset-4 transition hover:decoration-accent"
+          >
+            Copiar cita
+          </button>
+          <button
+            type="button"
+            data-export="ris"
+            class="text-muted underline decoration-line underline-offset-4 transition hover:text-ink hover:decoration-ink"
+          >
+            Descargar RIS
+          </button>
+          <button
+            type="button"
+            data-export="bibtex"
+            class="text-muted underline decoration-line underline-offset-4 transition hover:text-ink hover:decoration-ink"
+          >
+            Descargar BibTeX
+          </button>
+        </div>
       </div>
     </aside>
   </div>
@@ -258,7 +287,7 @@ const jsonLd = {
               {item.title}
             </a>
             <p class="mt-1 text-[12px] text-muted">
-              {authorLine(item.authors, 4)} · pp. {item.pages}
+              {authorLine(item.authors, 4)} · pp. {pageRange(item.pages)}
             </p>
           </li>
         ))
@@ -266,21 +295,85 @@ const jsonLd = {
     </ul>
   </section>
 
+  <script type="application/json" id="citation-export" set:html={JSON.stringify(exportData)} />
+
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const button = document.getElementById("copy-citation") as HTMLButtonElement | null;
       const citationEl = document.getElementById("citation");
-      if (!button || !citationEl) return;
+      const dataEl = document.getElementById("citation-export");
+      if (!dataEl) return;
 
-      button.onclick = async () => {
+      const data = JSON.parse(dataEl.textContent || "{}") as {
+        id: string;
+        title: string;
+        authors: string[];
+        journal: string;
+        year: number;
+        volume: number | string;
+        number: number | string;
+        firstPage: string;
+        lastPage: string;
+        date: string;
+        doi: string;
+      };
+
+      const download = (name: string, content: string, type: string) => {
+        const url = URL.createObjectURL(new Blob([content], { type }));
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = name;
+        link.click();
+        URL.revokeObjectURL(url);
+      };
+
+      button?.addEventListener("click", async () => {
         try {
-          await navigator.clipboard.writeText(citationEl.textContent?.trim() ?? "");
+          await navigator.clipboard.writeText(citationEl?.textContent?.trim() ?? "");
           button.textContent = "Cita copiada";
           setTimeout(() => (button.textContent = "Copiar cita"), 1600);
         } catch {
           button.textContent = "No se pudo copiar";
         }
-      };
+      });
+
+      const ris = () =>
+        [
+          "TY  - JOUR",
+          ...data.authors.map((name) => `AU  - ${name}`),
+          `TI  - ${data.title}`,
+          `JO  - ${data.journal}`,
+          `VL  - ${data.volume}`,
+          `IS  - ${data.number}`,
+          `SP  - ${data.firstPage}`,
+          `EP  - ${data.lastPage}`,
+          `PY  - ${data.year}`,
+          `DA  - ${data.date.replace(/-/g, "/")}`,
+          ...(data.doi ? [`DO  - ${data.doi}`] : []),
+          "ER  - ",
+        ].join("\r\n");
+
+      const bibtex = () =>
+        [
+          `@article{riuct${data.year}${data.id.replace(/[^a-z0-9]/gi, "")},`,
+          `  author  = {${data.authors.join(" and ")}},`,
+          `  title   = {${data.title}},`,
+          `  journal = {${data.journal}},`,
+          `  year    = {${data.year}},`,
+          `  volume  = {${data.volume}},`,
+          `  number  = {${data.number}},`,
+          `  pages   = {${data.firstPage}--${data.lastPage}}${data.doi ? "," : ""}`,
+          ...(data.doi ? [`  doi     = {${data.doi}}`] : []),
+          "}",
+        ].join("\n");
+
+      document.querySelectorAll<HTMLButtonElement>("[data-export]").forEach((el) => {
+        el.addEventListener("click", () => {
+          const kind = el.dataset.export;
+          if (kind === "ris") download(`riuct-${data.id}.ris`, ris(), "application/x-research-info-systems");
+          if (kind === "bibtex") download(`riuct-${data.id}.bib`, bibtex(), "application/x-bibtex");
+        });
+      });
     });
   </script>
 </BaseLayout>

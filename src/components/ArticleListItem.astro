@@ -1,6 +1,6 @@
 ---
 import type { Article } from "../data/journal";
-import { articleUrl, authorLine, doiLabel } from "../lib/journal";
+import { articleUrl, authorLine, doiLabel, pageRange } from "../lib/journal";
 
 interface Props {
   article: Article;
@@ -17,7 +17,7 @@ const { article } = Astro.props;
     >
       {article.title}
     </a>
-    <span class="shrink-0 text-[11px] text-muted">pp. {article.pages}</span>
+    <span class="shrink-0 text-[11px] text-muted">pp. {pageRange(article.pages)}</span>
   </div>
   <p class="mt-1.5 text-[12px] leading-relaxed text-muted">
     {authorLine(article.authors, 6)}

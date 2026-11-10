@@ -40,14 +40,24 @@ const url = canonical ?? new URL(Astro.url.pathname, site).href;
             <meta property="og:description" content={description} />
         )}
         <meta property="og:url" content={url} />
-        <meta name="twitter:card" content="summary" />
+        <meta property="og:image" content={`${site}/og-default.png`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content={`${meta.name} · ${meta.faculty}`} />
+        <meta name="twitter:card" content="summary_large_image" />
         <link rel="icon" type="image/png" href="/favicon.png" />
         <slot name="head" />
     </head>
     <body class="bg-paper font-sans text-ink antialiased">
+        <a
+            href="#contenido"
+            class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-70 focus:bg-ink focus:px-4 focus:py-2 focus:text-[13px] focus:text-paper"
+        >
+            Saltar al contenido
+        </a>
         <Preheader />
-        <Masthead active={active} />
-        <main class="mx-auto max-w-6xl px-6">
+        <Masthead active={active} brandAsHeading={active === "/"} />
+        <main id="contenido" class="mx-auto max-w-6xl px-6">
             <slot />
         </main>
         <Footer />
@@ -60,6 +70,8 @@ const url = canonical ?? new URL(Astro.url.pathname, site).href;
                 if (!el) {
                     el = document.createElement("div");
                     el.id = "site-toast";
+                    el.setAttribute("role", "status");
+                    el.setAttribute("aria-live", "polite");
                     el.style.cssText =
                         "position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);max-width:90vw;background:#1a1a1a;color:#fcfcfb;padding:.65rem 1rem;border:1px solid #e7e5e0;font-size:12px;line-height:1.4;z-index:60;text-align:center;";
                     document.body.appendChild(el);
